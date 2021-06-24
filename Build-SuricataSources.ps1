@@ -51,38 +51,39 @@ function Install-7z{
       [string]$Url='https://7-zip.org/a/7z1900-x64.exe'
   ) 
   process{
-    $is7zipInstalled = [boolean]$($(Start-Job -ScriptBlock {7z i} | Wait-Job).State -eq "Completed")
+    $env:Path+= ";$($env:PROGRAMFILES)\7-Zip"
+    $is7zipInstalled = [boolean]$($(Start-Job -ScriptBlock {7z.exe i} | Wait-Job).State -eq "Completed")
     if (-not $is7zipInstalled){
-        Invoke-WebRequest $Url -OutFile '7z_install.exe'
-        Start-Job -ScriptBlock {.\7z_install.exe /S /D="C:\Program Files\7-Zip"}  | Wait-Job
-        $env:Path+= ";C:\Program Files\7-Zip"
-
-        $is7zipInstalled = [boolean]$($(Start-Job -ScriptBlock {7z i} | Wait-Job).State -eq "Completed")
+        Invoke-WebRequest $Url -OutFile "$($env:TEMP)\7z_install.exe"
+        Start-Job -ScriptBlock {&"$($env:TEMP)\7z_install.exe" /S /D="$($env:PROGRAMFILES)\7-Zip"}  | Wait-Job
+        
+        $is7zipInstalled = [boolean]$($(Start-Job -ScriptBlock {7z.exe i} | Wait-Job).State -eq "Completed")
 
         if (-not $is7zipInstalled){
             Write-Error -Message "7zip installation is unsuccessful"
             [System.Environment]::Exit(1)
         }
 
-        Remove-Item .\7z_install.exe
+        Remove-Item "$($env:TEMP)\7z_install.exe"
 
         Write-Host "7zip installed successfully"
     }
     else {
         Write-Host "7zip already installed"
-        $env:Path+= ";C:\Program Files\7-Zip"
     }
   }
 }
 
-Install-7z
+Install-7z -Url 'https://7-zip.org/a/7z1900-x64.exe'
 
 Invoke-WebRequest http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20210604.tar.xz `
-    -OutFile msys2.tar.xz
+    -OutFile "$($env:TEMP)\msys2.tar.xz"
 
-Start-Job -ScriptBlock {7z x msys2.tar.xz -y; 7z x msys2.tar -oC:\ -y} | Wait-Job
+7z.exe x "$($env:TEMP)\msys2.tar.xz" -o"$($env:TEMP)\" -y
 
-$env:Path += ";C:\msys64"
+7z.exe x "$($env:TEMP)\msys2.tar" -o$($env:SystemDrive) -y
+
+$env:Path += ";$($env:SystemDrive)\msys64"
 
 msys2_shell.cmd -defterm -no-start -here -mingw64 -c "yes | pacman -Syuu"
 
@@ -121,7 +122,7 @@ git clone https://github.com/OISF/libhtp.git -b 0.5.x
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
 cd suricata && \
 cargo install cbindgen && \
-export PATH=`$PATH:/c/Users/`$USERNAME/.cargo/bin
+export PATH=`$PATH:/c/Users/$env:USERNAME/.cargo/bin
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
