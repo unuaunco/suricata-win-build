@@ -81,7 +81,7 @@ Invoke-WebRequest http://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-2021060
 
 7z.exe x "$($env:TEMP)\msys2.tar.xz" -o"$($env:TEMP)\" -y
 
-7z.exe x "$($env:TEMP)\msys2.tar" -o$($env:SystemDrive) -y
+7z.exe x "$($env:TEMP)\msys2.tar" -o"$($env:SystemDrive)" -y
 
 $env:Path += ";$($env:SystemDrive)\msys64"
 
