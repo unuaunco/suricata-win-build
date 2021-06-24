@@ -70,6 +70,7 @@ function Install-7z{
     }
     else {
         Write-Host "7zip already installed"
+        $env:Path+= ";C:\Program Files\7-Zip"
     }
   }
 }
