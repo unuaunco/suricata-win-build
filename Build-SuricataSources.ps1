@@ -109,9 +109,9 @@ mingw-w64-x86_64-jq mingw-w64-x86_64-libxml2
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c $(@"
-mkdir /npcap-sdk7 \
-&& curl -O https://nmap.org/npcap/dist/npcap-sdk-1.07.zip \  
-&& unzip npcap-sdk-1.07.zip -d /npcap-sdk7
+mkdir /npcap-sdk \
+&& curl -O https://nmap.org/npcap/dist/npcap-sdk-1.07.zip \
+&& unzip npcap-sdk-1.07.zip -d /npcap-sdk
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
@@ -127,7 +127,7 @@ export PATH=`$PATH:/c/Users/$env:USERNAME/.cargo/bin
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
 curl -s -O https://nmap.org/npcap/dist/npcap-1.00.exe && \
-7z -y x -o/npcap-bin npcap-1.00.exe && cp /npcap-bin/*.dll .
+7z -y x -o/npcap-bin npcap-1.00.exe && cp /npcap-bin/*.dll ./suricata
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
