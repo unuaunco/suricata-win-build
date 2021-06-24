@@ -115,39 +115,42 @@ mkdir /npcap-sdk \
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
-git clone -b suricata-6.0.2 https://github.com/OISF/suricata.git && cd suricata && \
-git clone https://github.com/OISF/libhtp.git -b 0.5.x
+git clone -b suricata-6.0.2 https://github.com/OISF/suricata.git \
+&& cd suricata \
+&& git clone https://github.com/OISF/libhtp.git -b 0.5.x
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
-cd suricata && \
-cargo install cbindgen && \
-export PATH=`$PATH:/c/Users/$env:USERNAME/.cargo/bin
+cd suricata \
+&& cargo install cbindgen
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
-curl -s -O https://nmap.org/npcap/dist/npcap-1.00.exe && \
-7z -y x -o/npcap-bin npcap-1.00.exe && cp /npcap-bin/*.dll ./suricata
+curl -s -O https://nmap.org/npcap/dist/npcap-1.00.exe \
+&& 7z -y x -o/npcap-bin npcap-1.00.exe && cp /npcap-bin/*.dll ./suricata
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
-cd suricata && \
-./autogen.sh && ./configure \
+cd suricata \
+&& export PATH=`$PATH:/c/Users/$env:USERNAME/.cargo/bin \
+&& ./autogen.sh \
+&& ./configure \
 --with-libpcap-includes=/npcap-sdk/Include/ --with-libpcap-libraries=/npcap-sdk/Lib/x64/ \
 --with-libnss-libraries=/mingw64/lib/ --with-libnss-includes=/mingw64/include/nss3/ \
 --with-libnspr-libraries=/mingw64/lib/ --with-libnspr-includes=/mingw64/include/nspr/ \
---enable-lua --disable-gccmarch-native --enable-gccprotect && \
-make clean && make -j 2
+--enable-lua --disable-gccmarch-native --enable-gccprotect \
+&& make clean \
+&& make -j 2
 "@ -replace "\\`n"," ")
 
 msys2_shell.cmd -defterm -no-start -mingw64 -here -c  $(@"
-mkdir -p /c/Program\ files/Suricata/{log,rules} && \
-cd suricata &&
-cp ./src/.libs/suricata /c/Program\ files/Suricata && \
-cp ./suricata.yml /c/Program\ files/Suricata && \
-cp ./rules/*.rules /c/Program\ files/Suricata/rules && \
-cp ./treshold.config /c/Program\ files/Suricata && \
-cp /c/msys64/mingw64/bin/{libGeoIP-1.dll,libssp-0.dll,libjansson-4.dll,libwinpthread-1.dll,\
+mkdir -p /c/Program\ files/Suricata/{log,rules} \
+&& cd suricata \
+&& cp ./src/.libs/suricata.exe /c/Program\ files/Suricata \
+&& cp ./suricata.yaml /c/Program\ files/Suricata \
+&& cp ./rules/*.rules /c/Program\ files/Suricata/rules \
+&& cp ./threshold.config /c/Program\ files/Suricata \
+&& cp /c/msys64/mingw64/bin/{libGeoIP-1.dll,libssp-0.dll,libjansson-4.dll,libwinpthread-1.dll,\
 liblzma-5.dll,libyaml-0-2.dll,libnspr4.dll,lua54.dll,libpcre-1.dll,nss3.dll,libplc4.dll,\
 nssutil3.dll,libplds4.dll,zlib1.dll} /c/Program\ files/Suricata
-"@ -replace "\\`n"," ")
+"@ -replace "\\`n","")
